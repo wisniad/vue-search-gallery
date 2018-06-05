@@ -14,7 +14,6 @@
     components: {
       NavBar,
       VueGallery,
-
     }
   }
 </script>

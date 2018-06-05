@@ -5,7 +5,7 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {
-    search: 'white',
+    search: '',
     counter: 0
   },
   mutations: { //  synchrnonous

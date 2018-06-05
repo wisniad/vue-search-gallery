@@ -1,11 +1,16 @@
 <template>
   <div>
     <gallery :images="images" :index="index" @close="index = null"></gallery>
-    <b-container fluid class="p-4">
+    <b-container fluid class="p-4 marginTop">
       <b-row class="Aligner">
+        <div v-if="images.length === 0">
+          <h1>Searching for image </h1>
+          <p>Please change your search query and check your internet connection.</p>
+        </div>
+
         <figure
           class="image snip1477"
-          v-for="(image, imageIndex) in images"
+          v-for="(image, imageIndex) in imagesWeb"
           :key="imageIndex"
           @click="index = imageIndex"
           :style="{ backgroundImage: 'url(' + image + ')', width: '300px', height: '200px' }"
@@ -35,6 +40,7 @@
         images: [],
         users: [],
         tags: [],
+        imagesWeb: [],
         index: null,
       };
     },
@@ -53,6 +59,7 @@
         .then((images) => {
           images.data.hits.map(image => {
             this.images.push(image.largeImageURL);
+            this.imagesWeb.push(image.webformatURL);
             this.tags.push(image.tags.split(' ', 10).join(' '))
             this.users.push(image.user)
           });
@@ -61,12 +68,14 @@
     watch: {
       search(searchNew) {
         this.images = [];
+        this.imagesWeb = [];
         this.tags = [];
         this.users = [];
         axios.get(`https://pixabay.com/api/?key=9196551-0dd43b4e5d14f8bcb7ba48690&q=${searchNew}&image_type=photo&pretty=true`)
           .then((images) => {
             images.data.hits.map(image => {
               this.images.push(image.largeImageURL);
+              this.imagesWeb.push(image.webformatURL);
               this.tags.push(image.tags.split(' ', 10).join(' '))
               this.users.push(image.user)
             });
@@ -84,9 +93,14 @@
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
-    border: 1px solid #ebebeb;
-    /*margin: 5px;*/
+
     cursor: pointer;
+
+    border: rgba(203,249,249,0.7) solid 1px;
+
+    -webkit-box-shadow: 3px 3px 9px 1px rgba(0,0,0,0.75);
+    -moz-box-shadow: 3px 3px 9px 1px rgba(0,0,0,0.75);
+    box-shadow: 3px 3px 9px 1px rgba(0,0,0,0.75);
   }
 
   .tags {
@@ -97,6 +111,9 @@
     color: #000000;
   }
 
+  .marginTop {
+    margin-top: 100px;
+  }
   @import url(https://fonts.googleapis.com/css?family=Raleway:400,500,700);
   @import url(https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css);
   figure.snip1477 {
@@ -259,7 +276,5 @@
     -webkit-transition-delay: 0.2s;
     transition-delay: 0.2s;
   }
-
-  /* Demo purposes only */
 
 </style>
