@@ -1,23 +1,27 @@
 <template>
   <div id="app">
     <NavBar/>
-    <div class="container">
-
-    </div>
+    <VueGallery/>
   </div>
 </template>
 
 <script>
   import NavBar from './components/NavBar'
+  import VueGallery from './components/VueGallery'
 
-export default {
-  name: 'App',
-  components: {
-    NavBar
+  export default {
+    name: 'App',
+    components: {
+      NavBar,
+      VueGallery,
+
+    }
   }
-}
 </script>
 
 <style>
+  body{
+    background-color: black;
+  }
 
 </style>
