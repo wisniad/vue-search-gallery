@@ -3,24 +3,22 @@
     <gallery :images="images" :index="index" @close="index = null"></gallery>
     <b-container fluid class="p-4">
       <b-row class="Aligner">
-
-    <figure
-      class="image snip1477"
-      v-for="(image, imageIndex) in images"
-      :key="imageIndex"
-      @click="index = imageIndex.previewURL"
-      :style="{ backgroundImage: 'url(' + image + ')', width: '300px', height: '200px' }"
-    >
-
-      <figcaption>
-        <p>Tags: {{ tags[imageIndex] }}</p>
-      </figcaption>
-      <div class="title">
-        <div>
-          <h5> {{ users[imageIndex] }}</h5>
-        </div>
-      </div>
-    </figure>
+        <figure
+          class="image snip1477"
+          v-for="(image, imageIndex) in images"
+          :key="imageIndex"
+          @click="index = imageIndex"
+          :style="{ backgroundImage: 'url(' + image + ')', width: '300px', height: '200px' }"
+        >
+          <figcaption>
+            <p class="tags">Tags: {{ tags[imageIndex] }}</p>
+          </figcaption>
+          <div class="title">
+            <div>
+              <h4> {{ users[imageIndex] }}</h4>
+            </div>
+          </div>
+        </figure>
       </b-row>
     </b-container>
   </div>
@@ -29,38 +27,58 @@
 <script>
   import VueGallery from 'vue-gallery';
   import axios from 'axios';
+  import store from '../store'
 
   export default {
-    data: function () {
+    data() {
       return {
         images: [],
         users: [],
         tags: [],
-        index: null
+        index: null,
       };
     },
 
     components: {
       'gallery': VueGallery
     },
+    computed: {
+      search() {
+        return store.getters.search;
+      }
+    },
     created() {
-      console.log('component created');
-      axios.get('https://pixabay.com/api/?key=9196551-0dd43b4e5d14f8bcb7ba48690&q=summer+beach&image_type=photo&pretty=true')
-        .then( (images) => {
-          images.data.hits.map( image => {
-            this.images.push(image.largeImageURL)
+      console.log('component created', this.search);
+      axios.get(`https://pixabay.com/api/?key=9196551-0dd43b4e5d14f8bcb7ba48690&q=${this.search}&image_type=photo&pretty=true`)
+        .then((images) => {
+          images.data.hits.map(image => {
+            this.images.push(image.largeImageURL);
             this.tags.push(image.tags.split(' ', 10).join(' '))
             this.users.push(image.user)
           });
-
-
-          // console.log(images.data.hits[i])
-          console.log(this.imagesDescription)
         })
+    },
+    watch: {
+      search(searchNew) {
+        this.images = [];
+        this.tags = [];
+        this.users = [];
+        axios.get(`https://pixabay.com/api/?key=9196551-0dd43b4e5d14f8bcb7ba48690&q=${searchNew}&image_type=photo&pretty=true`)
+          .then((images) => {
+            images.data.hits.map(image => {
+              this.images.push(image.largeImageURL);
+              this.tags.push(image.tags.split(' ', 10).join(' '))
+              this.users.push(image.user)
+            });
+          });
+      }
     }
   }
 </script>
 <style>
+  body {
+    color: black;
+  }
 
   .image {
     background-size: cover;
@@ -71,11 +89,14 @@
     cursor: pointer;
   }
 
-  .Aligner {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .tags {
+    display: block;
+    font-weight: 400;
+    background-color: #ffffff;
+    padding: 2px 5px;
+    color: #000000;
   }
+
   @import url(https://fonts.googleapis.com/css?family=Raleway:400,500,700);
   @import url(https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css);
   figure.snip1477 {
@@ -87,11 +108,12 @@
     min-width: 230px;
     max-width: 315px;
     width: 100%;
-    color: #ffffff;
+    /*color: #ffffff;*/
     text-align: center;
     font-size: 16px;
     background-color: #000000;
   }
+
   figure.snip1477 *,
   figure.snip1477 *:before,
   figure.snip1477 *:after {
@@ -100,18 +122,21 @@
     -webkit-transition: all 0.55s ease;
     transition: all 0.55s ease;
   }
+
   figure.snip1477 img {
     max-width: 100%;
     backface-visibility: hidden;
     vertical-align: top;
     opacity: 0.9;
   }
+
   figure.snip1477 .title {
     position: absolute;
     top: 58%;
     left: 25px;
     padding: 5px 10px 10px;
   }
+
   figure.snip1477 .title:before,
   figure.snip1477 .title:after {
     height: 2px;
@@ -120,18 +145,21 @@
     content: '';
     background-color: #ffffff;
   }
+
   figure.snip1477 .title:before {
     top: 0;
     left: 10px;
     -webkit-transform: translateX(100%);
     transform: translateX(100%);
   }
+
   figure.snip1477 .title:after {
     bottom: 0;
     right: 10px;
     -webkit-transform: translateX(-100%);
     transform: translateX(-100%);
   }
+
   figure.snip1477 .title div:before,
   figure.snip1477 .title div:after {
     width: 2px;
@@ -140,33 +168,39 @@
     content: '';
     background-color: #ffffff;
   }
+
   figure.snip1477 .title div:before {
     top: 10px;
     right: 0;
     -webkit-transform: translateY(100%);
     transform: translateY(100%);
   }
+
   figure.snip1477 .title div:after {
     bottom: 10px;
     left: 0;
     -webkit-transform: translateY(-100%);
     transform: translateY(-100%);
   }
+
   figure.snip1477 h2,
   figure.snip1477 h4 {
     margin: 0;
     text-transform: uppercase;
   }
+
   figure.snip1477 h2 {
     font-weight: 400;
   }
+
   figure.snip1477 h4 {
     display: block;
-    font-weight: 700;
+    font-weight: 400;
     background-color: #ffffff;
-    padding: 5px 10px;
+    padding: 2px 5px;
     color: #000000;
   }
+
   figure.snip1477 figcaption {
     position: absolute;
     bottom: 42%;
@@ -178,9 +212,11 @@
     font-weight: 500;
     letter-spacing: 1.5px;
   }
+
   figure.snip1477 figcaption p {
     margin: 0;
   }
+
   figure.snip1477 a {
     position: absolute;
     top: 0;
@@ -188,6 +224,7 @@
     left: 0;
     right: 0;
   }
+
   figure.snip1477:hover img,
   figure.snip1477.hover img {
     zoom: 1;
@@ -195,6 +232,7 @@
     -webkit-opacity: 0.35;
     opacity: 0.35;
   }
+
   figure.snip1477:hover .title:before,
   figure.snip1477.hover .title:before,
   figure.snip1477:hover .title:after,
@@ -206,6 +244,7 @@
     -webkit-transform: translate(0, 0);
     transform: translate(0, 0);
   }
+
   figure.snip1477:hover .title:before,
   figure.snip1477.hover .title:before,
   figure.snip1477:hover .title:after,
@@ -213,12 +252,14 @@
     -webkit-transition-delay: 0.15s;
     transition-delay: 0.15s;
   }
+
   figure.snip1477:hover figcaption,
   figure.snip1477.hover figcaption {
     opacity: 1;
     -webkit-transition-delay: 0.2s;
     transition-delay: 0.2s;
   }
+
   /* Demo purposes only */
 
 </style>

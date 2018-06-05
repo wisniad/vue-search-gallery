@@ -20,8 +20,12 @@
 </script>
 
 <style>
-  body{
-    background-color: black;
+  #blueimp-gallery > a {
+    color: white;
   }
-
+  .Aligner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 </style>
